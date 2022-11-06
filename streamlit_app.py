@@ -21,7 +21,7 @@ url= "https://www.dcinbox.com/api/csv.php"
 #import data
 @st.experimental_memo
 def get_data():
-    df = pd.read_csv("dc_inbox_test_data.csv", parse_dates=['Date of Birth'], converters={'District': convert}, dtype={'District': "int8"})
+    df = pd.read_csv("dc_inbox_test_data.csv", parse_dates=['Date of Birth'])
     df['Date'] = df['Unix Timestamp'].apply(lambda x: dt.datetime.fromtimestamp(x/1000))
     df = df.drop(['Unix Timestamp'], axis=1)
     df['Full Text'] = df['Subject'] + ' ' +  df['Body']
