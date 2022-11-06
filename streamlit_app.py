@@ -16,12 +16,12 @@ url="https://www.dcinbox.com/api/csv.php"
 #takes fifteen minutes to download
 url= "https://www.dcinbox.com/api/csv.php"
 #sample date for development
-sample_url = "https://d9fe47c0-6fe3-4799-8aa2-c0b9fc576746.filesusr.com/ugd/f1b05b_dc819d864b47466293d7ebbd60853c9f.csv?dn=09_2021.csv"
 
+# data on computer "/Users/samkobrin/Downloads/dc_inbox_test_data.csv"
 #import data
 @st.experimental_memo
 def get_data():
-    df = pd.read_csv("/Users/samkobrin/Downloads/dc_inbox_test_data.csv", parse_dates=['Date of Birth'], converters={'District': convert}, dtype={'District': "int8"})
+    df = pd.read_csv("dc_inbox_test_data.csv", parse_dates=['Date of Birth'], converters={'District': convert}, dtype={'District': "int8"})
     df['Date'] = df['Unix Timestamp'].apply(lambda x: dt.datetime.fromtimestamp(x/1000))
     df = df.drop(['Unix Timestamp'], axis=1)
     df['Full Text'] = df['Subject'] + ' ' +  df['Body']
