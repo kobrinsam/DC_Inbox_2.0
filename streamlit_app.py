@@ -7,7 +7,7 @@ import json
 import datetime as dt
 import requests
 url = "https://pmmghxxijwmbhfautdiz.supabase.co"
-key = st.secrets(['key'])
+key = st.secrets.key
 
 #sql query
 supabase: Client = create_client(url, key)
