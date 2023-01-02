@@ -6,34 +6,30 @@ import numpy as np
 import json
 import datetime as dt
 import requests
+from google.cloud import storage
 
+def download_public_file(bucket_name, source_blob_name, destination_file_name):
+    """Downloads a public blob from the bucket."""
+    # bucket_name = "your-bucket-name"
+    # source_blob_name = "storage-object-name"
+    # destination_file_name = "local/path/to/file"
 
-#url = "https://pmmghxxijwmbhfautdiz.supabase.co"
-#key = st.secrets.key
+    storage_client = storage.Client.create_anonymous_client()
 
-#sql query
-#supabase: Client = create_client(url, key)
-#data = supabase.table("dcinbox3").select("*").execute()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(source_blob_name)
+    blob.download_to_filename(destination_file_name)
 
-# Get the JSON data from the APIResponse object
-#json_data = data.json()
-#data = json.loads(json_data)
-#data = data['data']
-#data = pd.DataFrame(data)
+    print(
+        "Downloaded public blob {} from bucket {} to {}.".format(
+            source_blob_name, bucket.name, destination_file_name
+        )
+    )
 
 st.title("DC Inbox Dashboard")
 st.subheader("Official e-newsletters from every member of Congress. In one place. In real time.")
 st.caption("Note due to the large amount of data (160K plus e-newsletters) this dashboard takes about 15 mintues to intialize. After the source file is cached, reloading is much faster.")
 url="https://www.dcinbox.com/api/csv.php"
-
-#takes fifteen minutes to download
-url= "https://www.dcinbox.com/api/csv.php"
-#sample date for development
-
-# data on computer "/Users/samkobrin/Downloads/dc_inbox_test_data.csv"
-# data in github
-#import data
-#data from supabase
 
 #assert len(data.data) > 0
 @st.experimental_memo
@@ -41,10 +37,9 @@ def get_data():
     # loading the temp.zip and creating a zip object
     #with ZipFile("dcinbox_export.zip", 'r') as zObject:
      #   zObject.extractall()
- 
-    df = pd.read_csv('dc_inbox2.gz', engine= 'c')
-    #df = pd.read_csv('dc_inbox_test_data.csv', parse_dates=['Date of Birth'])
-    
+    file = download_public_file("dcinbox","dc_inbox2.gz", "dc_inbox2.gz")
+    df = pd.read_csv('dc_inbox2.gz', engine= 'c', parse_dates=['Date of Birth'])
+   
     df['Unix Timestamp'] = df['Unix Timestamp'].apply(lambda x: int(x) /1000)
     df['Date'] = pd.to_datetime(df['Unix Timestamp'],unit='s', origin='unix')
     df = df.drop(['Unix Timestamp'], axis=1)
@@ -72,7 +67,7 @@ filtered_df = df[(df['Party'].isin(party)) & (df['Chamber'].isin(chamber)) & (df
 #chart_df = filtered_df.groupby(pd.Grouper(key = 'Date', freq='W')).agg({'ID':pd.Series.nunique}).reset_index()
 chart_df = filtered_df.groupby(pd.Grouper(key = 'Date', freq='M')).agg({'HateSpeechWordCount':pd.Series.sum}).reset_index()
 
-st.subheader("Chart of Divsive Word Counts in Congressional Emails")
+st.subheader("Chart of Divisive Word Counts in Congressional Emails")
 chart = alt.Chart(chart_df).mark_line().encode(
 x='Date',
 y= alt.Y('HateSpeechWordCount', title = "Count of Divisive Words Used"))
