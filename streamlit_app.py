@@ -1,4 +1,3 @@
-from supabase import create_client, Client
 import altair as alt
 import pandas as pd
 import streamlit as st
