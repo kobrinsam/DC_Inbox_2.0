@@ -2,7 +2,6 @@ numpy
 altair
 pandas
 streamlit
+datetime
 sklearn
-requests
-zipfile2
 google-cloud-storage 
