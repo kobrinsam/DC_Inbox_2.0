@@ -3,5 +3,4 @@ altair
 pandas
 streamlit
 datetime
-sklearn
 google-cloud-storage 
